@@ -26,5 +26,40 @@ irnt <- function(cts_variable) {
 # > varxShort
 # [1] "2190"
 
+##读取同一目录下的所有文件
+path <- "F:/Rfile/OD-B/Data" ##文件目录
+fileNames <- dir(path)  ##获取该路径下的文件名
+filePath <- sapply(fileNames, function(x){ 
+  paste(path,x,sep='/')})   ##生成读取文件路径
+data <- lapply(filePath, function(x){
+  read.csv(x, header=T)})  ##读取数据，结果为list
+##从数据库中读取数据类似上面，获取要数据库里的文件名，写个正则筛选文件名后for循环读取。
+outPath <- "F:/Rfile/OD-B/Consequence" ##输出路径
+out_fileName <- sapply(names(data),function(x){
+  paste(x, ".csv", sep='')}) ##csv格式
+out_filePath  <- sapply(out_fileName, function(x){
+  paste(outPath ,x,sep='/')}) ##输出路径名
+##输出文件
+for(i in 1:length(data)){
+  write.csv(data[[i]], file=out_filePath[i], row.name=F) 
+}
 
 
+# getwd()
+# [1] "C:/Users/Uwe/Documents/Rdevel/coverage"
+# setwd("../stackoverflow/")   # .. means go up one directory level
+# getwd()
+# [1] "C:/Users/Uwe/Documents/Rdevel/stackoverflow"
+# setwd("../..")   # go up two levels
+# getwd()
+# [1] "C:/Users/Uwe/Documents"
+# getwd()
+# [1] "C:/Users/Uwe/Documents"
+# setwd("./Rdevel/")   # . denotes actual directory
+# getwd()
+# [1] "C:/Users/Uwe/Documents/Rdevel"
+# getwd()
+# [1] "C:/Users/Uwe/Documents"
+# setwd("Rdevel")
+# getwd()
+# [1] "C:/Users/Uwe/Documents/Rdevel"
