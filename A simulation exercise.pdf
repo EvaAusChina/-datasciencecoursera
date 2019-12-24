@@ -1,0 +1,37 @@
+---
+title: "A simulation exercise"
+author: "EvaLiang"
+date: "2019Äê12ÔÂ24ÈÕ"
+output: pdf_document
+---
+Overview:In this project I will investigate the exponential distribution in R and compare it with the Central Limit Theorem.  I will investigate the distribution of averages of 40 exponentials. 
+
+1. Show the sample mean and compare it to the theoretical mean of the distribution.
+```{r}
+set.seed(19)
+sample <- rexp(40, 0.2)
+sample_mean <- 1/0.2
+theoratical_mean <- mean(sample)
+c(sample_mean,theoratical_mean)
+```
+The sample mean is 5.000000
+The theoritical mean of the distribution is 4.253421
+
+2. Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
+```{r}
+sample_var <- (1/0.2)^2
+theoratical_var <- var(sample)
+c(sample_var,theoratical_var)
+```
+The sample variance is 25.00000
+The theoritical variance of the distribution is 13.38
+
+3. Show that the distribution is approximately normal.
+```{r}
+hist(sample)
+mns = NULL
+for (i in 1 : 1000) mns = c(mns, mean(rexp(40, 0.2)))
+hist(mns)
+
+```
+This distribution looks far more Gaussian than the original exponential distribution!
