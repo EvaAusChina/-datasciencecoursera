@@ -1,0 +1,77 @@
+---
+title: "Regression Models Course Project"
+author: "EvaLiang"
+date: "2020/02/12"
+output:
+  html_document:
+    df_print: paged
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Brief summary: According to subsequent analysis, we found that the mpg is largely determined by the interplay between weight, acceleration and transmission. This could give us some instincts towards whether an automatic or manual transmission better for MPG.
+
+**1. Is an automatic or manual transmission better for MPG**
+```{r, include = FALSE}
+library(datasets)
+library(dplyr)
+library(ggplot2)
+mtcars1 <- mtcars
+mtcars1$Transmission <- as.factor(mtcars1$am)
+levels(mtcars1$Transmission) <- c ("Auto", "Manual")
+```
+
+```{r mtcars1, echo=TRUE}
+plot(mtcars1$Transmission, mtcars1$mpg, main = "Car Mileage-Auto vs Manual Transmission", xlab ="Transmission", ylab = "Mileage")
+```
+A boxplot can be seen above, a car with Manual transmission has better mileage than a Auto transmission.
+
+**2. Quantify the MPG difference between automatic and manual transmissions**
+We fit the effect of only the transmission on miles per gallon(mpg) to quantify the MPG difference between automatic and manual transmissions. 
+For a two sided hypothesis with p value = 0.05, the null hypothesis is defined that the transmission has no impact on miles per gallon(mpg).
+```{r}
+fitlm1 <- lm(mpg~am, mtcars)
+summary(fitlm1)
+```
+From the summary of above, we see that both transmission types are positively related to mileage. Also the manual transmission has a edge over auto, i.e. a higher gas mileage of 7.2449393 compared to auto transmission.
+
+The p value of both transmission types < 0.05, we can reject the null hypothesis and state that both transmission types have impact on the mileage.
+
+To construct a model with good fit, we use stepwise selection.
+```{r}
+stepmodel = step(lm(formula = mpg ~ wt + qsec + am , data = mtcars),trace=0,steps=10000)
+summary(stepmodel)
+```
+In this case, we include three variables, i.e. wt, qsec and am, and the interaction between wt and am. which take up 85% of total variance.  
+Next, we can examine mpg ~ wt + qsec correlation with am.
+```{r}
+model <- lm(mpg~ factor(am):wt + factor(am):qsec,data=mtcars)
+summary(model)
+```
+**3. Conclusion**
+In total, this model has a 89.5% total variance with an adjusted variance of 0.879.
+For coefficients interpretation:
+A car with Manual transmission has higher gas mileage of 7.2449393 compared to auto transmission.  
+
+The mpg is mainly determined by the interplay between weight, acceleration and transmission. 
+When the weight increased by 1000 lbs, the mpg decreased by -3.1759 for automatic transmission cars, and -6.0992 for manual transmission cars so with increasing car weight we should choose manual transmission cars.
+When the acceleration speed dropped, and 1/4 mile time increased (by 1 sec), the mpg factor increased by 0.8338 miles for automatic transmission cars, and 1.446 miles for manual transmission cars
+so with lower acceleration speed, but same weight, manual transmission cars are better for mpg.  
+
+**4. Appendix**
+Appendix 1. Residual check and diagnostics plot
+```{r}
+par(mfrow=c(2,2))    
+plot(model)
+```
+Appendix 2. Scatter plot
+```{r}
+pairs(mpg ~ ., data = mtcars)
+```
+Appendix 3. Density and histogram
+```{r}
+par(mfrow=c(2,1))
+hist(mtcars$mpg, breaks=10, xlab="MPG", main="MPG histogram")
+plot(density(mtcars$mpg), main="kernel density", xlab="MPG")
+```
+

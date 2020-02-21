@@ -3,7 +3,7 @@ load("G:/phenotype estimation/F__phenotype estimation_trybd.Rdata")
 x1807 <- irnt(trybd[,"f.1807.0.0"])
 head(x1807)
 irnt <- function(cts_variable) {
-  set.seed(1234) # This is the same as was used by PHESANT - for checking.
+  set.seed(1234) # This is thQe same as was used by PHESANT - for checking.
   n_cts <- length(which(!is.na(cts_variable)))
   quantile_cts <- (rank(cts_variable, na.last = "keep", ties.method = "random") - 0.5) / n_cts
   # use the above to check, but also use frank for the real thing
@@ -11,6 +11,8 @@ irnt <- function(cts_variable) {
   return(cts_IRNT)
 }
 
+variablelistfile <- fread("variable-info/outcome_info_final_pharma_nov2019.tsv")
+datacodingfile <- read.table("variable-info/data-coding-ordinal-info-nov2019-update.txt")
 ### regular pattern
 # > a <- "x2190_0_0"
 # > gsub("^x", "", a)
@@ -63,3 +65,8 @@ for(i in 1:length(data)){
 # setwd("Rdevel")
 # getwd()
 # [1] "C:/Users/Uwe/Documents/Rdevel"
+
+
+cor.test(x,y)$p.value
+names(cor.test(x,y))
+print.cor.test

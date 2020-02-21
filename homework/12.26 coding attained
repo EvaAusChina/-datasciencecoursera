@@ -1,0 +1,64 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+fixOddFieldsToCatMul <- function(data)
+{
+    # Examples are variables: 40006, 40011, 40012, 40013
+    # Get all variables that need their instances changing to arrays
+    dataPheno <- vl$phenoInfo[which(vl$phenoInfo$CAT_SINGLE_TO_CAT_MULT=="YES-INSTANCES"),]
+
+    for (i in 1:nrow(dataPheno)) {
+        varID <- dataPheno[i,]$FieldID
+        varidString <- paste("x",varID,"_", sep="")
+        
+        # Get all columns in data dataframe for this variable
+        colIdxs <- which(grepl(varidString,names(data)))
+
+        # Change format from xvarid_0_0, xvarid_1_0, xvarid_2_0, to xvarid_0_0, xvarid_0_1, xvarid_0_2
+        count <- 0;
+        for (j in colIdxs) {
+            colnames(data)[j] <- paste(varidString, "0_", count, sep="")
+            count <- count + 1
+        }
+    }
+    return(data)
+}
+```
+
+# Load the variable information and data code information files
+```{r}
+initCounters <- function() {
+	counters <- data.frame(name=character(),
+						   countValue=integer(),
+                           stringsAsFactors=FALSE)
+	return(counters)
+}
+initVariableLists <- function()
+{
+	phenoInfo <- read.table(opt$variablelistfile, sep="\t", header=1, comment.char="", quote="")
+	dataCodeInfo <- read.table(opt$datacodingfile,sep=",", header=1)
+	vars <- list(phenoInfo=phenoInfo, dataCodeInfo=dataCodeInfo)
+	return(vars)
+}
+```
+
+
+```{r}
+load("G:/phenotype estimation/F__phenotype estimation_trybd.Rdata")
+colnames(trybd) <- gsub("[.]", "_", colnames(trybd))
+colnames(trybd) <- gsub("^f_", "x", colnames(trybd))
+colnames(trybd)[1] <- "userId"
+write.csv(trybd, "WAS/phenotypes.csv",  row.names = FALSE)
+```
+
+phenofile = trybd
+varlogfile = "../variable-info/data-coding-ordinal-info-nov2019-update.txt"
+varlogfile <- read_tsv("variable-info/outcome_info_final_pharma_nov2019.tsv")
+datacodingfile <- read.table("variable-info/data-coding-ordinal-info-nov2019-update.txt")
+
+head(datacodingfile)
+testCategoricalMultiple(colnames(trybd)[-1], datacodingfile ,trybd , variablelistfile)
+
